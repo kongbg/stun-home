@@ -24,7 +24,7 @@ service.interceptors.request.use(
     return config;
   },
   (error) => {
-    // console.log(error);
+    console.log(error);
     Promise.reject(error);
   }
 );
@@ -46,6 +46,7 @@ service.interceptors.response.use(
     return Promise.resolve(res.data);
   },
   (error) => {
+    console.log(error)
     // 优先取后端返回的错误信息
     let errMsg = error?.response?.data?.msg || "";
 

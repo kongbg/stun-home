@@ -1,10 +1,16 @@
 import SQLiteDB from '../sqlite/index.js'
 import Mode from '../mode/index.js'
+import path from 'path'
+
+const __dirname = path.resolve();
+let dbPath = path.join(__dirname + "/config/data.db")
+console.log('dbPath:', dbPath)
+let apiKey = process.env.APIKEY || ''
 
 const tableName = 'urls'
 
 // 创建数据库连接
-const db = new SQLiteDB('data.db')
+const db = new SQLiteDB(dbPath)
 const mode = new Mode(tableName, db)
 
 // 创建表字段
@@ -142,6 +148,20 @@ export default class urlController {
    * 通过code新增、更新
    */
   static async updateUrl(ctx) {
+    // 偷懒了，直接在这这里拦截校验apiKey
+    let key = ctx.request?.query?.apiKey || ctx.request?.body?.apiKey || '';
+    console.log('key:',key, 'apiKey:', apiKey)
+    if (key == apiKey) {
+        console.log('校验通过')
+    } else {
+        ctx.response.body = {
+            code: 400,
+            data: null,
+            msg: 'apiKey校验失败, 请到容器/app/config.js，或者映射目录中，或者容器日志中寻找apiKey'
+        }
+        return
+    }
+
     const query = ctx.request.body
     let [err, res] = await mode.getData(
       {

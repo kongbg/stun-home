@@ -9,7 +9,7 @@
             label-width="auto"
         >
         <el-form-item label="网站分类">
-            <el-select placeholder="网站分类" v-model="formData.parentId"> 
+            <el-select placeholder="网站分类" :disabled="mode == 'create'" v-model="formData.parentId"> 
                 <el-option v-for="item in types" :value="item.id" :label="item.name"></el-option>
             </el-select>
         </el-form-item>
@@ -66,8 +66,8 @@ const rules = {
 watch(() => props.modelValue, () =>{
     formData.value.parentId = parentId.value || 'd999999'
     title.value = mode.value == 'create' ? '新增网站' : '编辑网站'
+    getTypes()
     if (id.value) {
-        getTypes()
         getDetail()
     }
 })

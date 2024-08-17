@@ -36,7 +36,6 @@ const mode = defineModel('mode')
 const id = defineModel('id')
 const formData = defineModel('formData')
 const title = ref('')
-debugger
 const rules = {
     name: [
         { required: true, message: '请输入分类名称', trigger: 'blur' },

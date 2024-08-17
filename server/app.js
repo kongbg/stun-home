@@ -5,8 +5,8 @@ import path from 'path'
 import fs from 'fs'
 import Cors from '@koa/cors'
 import appRouter from './routes/index.js'
-const app = new Koa();
 
+const app = new Koa();
 app.use(Cors())
 const __dirname = path.resolve();
 app.use(koaStatic(path.join(__dirname + "/server/public")));

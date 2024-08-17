@@ -1,10 +1,14 @@
 import SQLiteDB from '../sqlite/index.js'
 import Mode from '../mode/index.js'
+import path from 'path'
 
+const __dirname = path.resolve();
+let dbPath = path.join(__dirname + "/config/data.db")
+console.log('dbPath:', dbPath)
 const tableName = 'navtype'
 
 // 创建数据库连接
-const db = new SQLiteDB('data.db')
+const db = new SQLiteDB(dbPath)
 const mode = new Mode(tableName, db)
 const urlMode = new Mode('urls', db)
 

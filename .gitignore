@@ -23,6 +23,7 @@ selenium-debug.log
 .bin
 *.db
 .github
+config.js
 tmp
 video
 

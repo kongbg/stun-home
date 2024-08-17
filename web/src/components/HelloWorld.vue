@@ -1,16 +1,30 @@
 <template>
   <div class="home-page">
+    <!-- <div class="clock-date container" >
+      <div class="time">
+        <div class="time-h">01</div>
+        <div class="dots">:</div>
+        <div class="time-m">05</div>
+      </div>
+      <div class="date">
+        <span>星期日</span>
+        <span>八月</span>
+        <span>18</span>
+      </div>
+    </div> -->
     <div class="container  mx-auto search-warp">
       <el-input class="search" v-model="searchKey" @change="serach" placeholder="" />
     </div>
-    <div class="types container mx-auto flex mt-2.5">
-      <div class="nav-type px-2 border-solid border rounded mr-2.5" :class="{'active': activeTypeId == item.id}" v-for="item in navTypes" :key="item.defineModel" @click="setUrls(item)" @contextmenu.prevent="event => openContextMenu(event, item.id)">{{ item.name }}</div>
-      <div v-if="isAdmin" class="nav-type px-2 border-solid border rounded" @click="openTypeCreate('create')">+</div>
+    <div class="types container mx-auto mt-2.5">
+      <div class="nav-items flex">
+        <div class="nav-type px-2 border-solid border rounded mr-2.5" :class="{'active': activeTypeId == item.id}" v-for="item in navTypes" :key="item.defineModel" @click="setUrls(item)" @contextmenu.prevent="event => openContextMenu(event, item.id)">{{ item.name }}</div>
+        <div v-if="isAdmin" class="nav-type px-2 border-solid border rounded" @click="openTypeCreate('create')">+</div>
+      </div>
     </div>
     <div class="urls container mx-auto flex mt-2.5">
       <div class="url-item px-2 rounded cursor-pointer mr-2.5" v-for="item in urls" @contextmenu.prevent="event => openContextMenu2(event, item.id)" @click="openPage(item)">
         <div class="icon">
-          <img :src="item.icon"/>
+          <img :src="item.icon || 'https://img.omnitab.link/icons/2553.png'"/>
         </div>
         <div class="name">{{ item.name }}</div>
       </div>
@@ -158,7 +172,6 @@ async function getDetail() {
 
 
 function openContextMenu(event, id) {
-  debugger
   if(id == 'd999999') return
   let { pageX=0, pageY=0 } = event
   fixedX.value = pageX + 20;
@@ -218,7 +231,7 @@ async function handleTypeDelete() {
 }
 // 删除导航分类
 async function handleUrlDelete() {
-  let { code, data, msg } = await del({id: urlId.value});
+  let { code, data, msg } = await delUrl({id: urlId.value});
   if (code == 200) {
     await handleGetDatas()
     changeMenuStatus2()
@@ -274,17 +287,25 @@ onMounted(()=>{
       showMenu2.value = false;
     }
   }
+
+  const scrollContainer = document.getElementsByClassName('types')[0];
+  let isScrolling;
+
+  scrollContainer.addEventListener('wheel', (e) => {
+    // 使用requestAnimationFrame来平滑滚动效果
+    if (isScrolling) return;
+    isScrolling = true;
+
+    requestAnimationFrame(() => {
+      // 计算滚动步长，这里以每轮滚动10px为例
+      const step = e.deltaY / 4;
+      // 设置滚动位置
+      scrollContainer.scrollLeft  += step;
+      // 重置滚动状态
+      isScrolling = false;
+    });
+  });
 })
-
-// curl 'http://192.168.1.3:3006/api/urls/updateUrl' \
-//   -H 'Accept: application/json, text/plain, */*' \
-//   -H 'Content-Type: application/json;charset=UTF-8' \
-//   --data-raw '{"code":"alist","url":"http:192.168.2.15:6527"}'
-
-//   curl 'http://localhost:5173/api/urls/updateUrl' \
-//   -H 'Accept: application/json, text/plain, */*' \
-//   -H 'Content-Type: application/json;charset=UTF-8' \
-//   --data-raw '{"code":"alist","url":"http:192.168.2.15:6527"}'
 </script>
 
 <style lang="scss" scoped>
@@ -308,6 +329,8 @@ onMounted(()=>{
 .types {
   padding: 0 12px;
   cursor: pointer;
+  overflow-x: auto;
+  overflow-y: hidden;
   .nav-type {
     margin-top: 5px;
     margin-right: 10px;
@@ -319,6 +342,10 @@ onMounted(()=>{
     align-items: center;
     justify-content: center;
     border-radius: 50px;
+    font-size: 14px;
+    height: 24px;
+    line-height: 24px;
+    word-break: keep-all;
     &.active {
       background-color: #e7e7e7;
       color: #333333;
@@ -326,6 +353,7 @@ onMounted(()=>{
   }
 }
 .urls {
+  padding: 0 12px;
   .url-item {
     position: relative;
     align-items: center;
@@ -384,6 +412,51 @@ onMounted(()=>{
     &:hover {
       cursor: pointer;
       background-color: #ffffff1a;
+    }
+  }
+}
+/* 滚动条样式 */
+.types::-webkit-scrollbar {
+     width: 2px; /*  设置纵轴（y轴）轴滚动条 */
+     height: 2px; /*  设置横轴（x轴）轴滚动条 */
+ }
+ /* 滚动条滑块（里面小方块） */
+ .types::-webkit-scrollbar-thumb {
+     border-radius: 10px;
+    //  box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+     background: transparent;
+ }
+ /* 滚动条轨道 */
+ .types::-webkit-scrollbar-track {
+     border-radius: 0;
+    //  box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+     background: transparent;
+ }
+
+.clock-date {
+  padding-bottom: 20px;
+  color: #fff;
+  .time {
+    font-weight: 400;
+    font-size: 50px;
+    display: flex;
+    .time-h {
+
+    }
+    .dots {
+      color: #fff;
+      margin: 0 6px;
+      vertical-align: calc(50px / 12);
+      animation: blink-clock-dot 1s linear infinite
+    }
+    .time-m {
+
+    }
+  }
+  .date {
+    span {
+      display: inline-block;
+      margin-right: 10px;
     }
   }
 }
