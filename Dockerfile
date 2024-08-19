@@ -1,4 +1,4 @@
-FROM kongbg/node
+FROM node:16-slim as build-stage
 
 # 设置工作目录
 WORKDIR /app
