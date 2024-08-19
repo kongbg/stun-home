@@ -55,9 +55,6 @@
       </div>
     </div>
 
-    <!-- <div @click="add">新增</div>
-    <div @click="up">更新</div> -->
-
     <TypeDialog v-model="typeDialogShow" :mode="typeMode" :formData="typeformData" :id="typeId" @finsh="handleGetDatas"></TypeDialog>
     <UrlDialog v-model="urlDialogShow" :mode="urlMode" :formData="urlformData" :parentId="activeTypeId" :id="urlId" @finsh="finsh2"></UrlDialog>
   </div>
@@ -353,7 +350,8 @@ onMounted(()=>{
   }
 }
 .urls {
-  padding: 0 12px;
+  // padding: 0 12px;
+  flex-wrap: wrap;
   .url-item {
     position: relative;
     align-items: center;
@@ -384,12 +382,13 @@ onMounted(()=>{
       font-size: 12px;
     }
     &.create {
-      width: 60px;
-      height: 60px;
+      width: 58px;
+      height: 58px;
       border: 1px solid #fff;
       margin-top: 5px;
       font-size: 32px;
-    color: #fff;
+      color: #fff;
+      margin-left: 14px;
     }
   }
 }
