@@ -7,4 +7,5 @@ const router = new Router()
 // router.use(moduleA).use(moduleB).use(moduleC);
 router.use(navtype)
         .use(urls)
+// router.use(navtype)
 export default router;
