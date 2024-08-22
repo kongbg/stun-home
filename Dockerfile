@@ -8,7 +8,7 @@ WORKDIR /app
 # 拷贝代码
 COPY . /app
 
-RUN npm install
+#RUN npm install
 
 # 打包vue
 RUN cd ./web \
