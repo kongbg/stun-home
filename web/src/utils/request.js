@@ -20,7 +20,8 @@ service.interceptors.request.use(
     if (getToken() && !isToken) {
       config.headers["Authorization"] = "Bearer " + getToken(); // 让每个请求携带自定义token 请根据实际情况自行修改
     }
-
+    config.params = {data: 'b06e9462a5f7e5ed68daab868c969b4e855c8885650f233f5ebfab6f15432106b097acaa8ea7f98b6252c9d60c121412'}
+    console.log('configconfig:', config)
     return config;
   },
   (error) => {

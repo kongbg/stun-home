@@ -1,5 +1,5 @@
 import Router from 'koa-router'
-import controller from '../controllers/urls.js'
+import controller from '../controllers/url.js'
 
 const urlKey = '/urls'
 const router = new Router({ prefix: '/api' })

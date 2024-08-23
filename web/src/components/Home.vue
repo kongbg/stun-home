@@ -12,6 +12,27 @@
         <span>18</span>
       </div>
     </div> -->
+    <div class="head">
+      <div class="left"></div>
+      <div class="right">
+        <div class="items">
+          <div class="item login" @click="loginDialogShow=true">登录</div>
+          <el-popover
+            class="item"
+            placement="bottom"
+            :width="200"
+            trigger="click"
+            content="this is content, this is content, this is content"
+          >
+            <template #reference>
+              <img class="face" src="https://pic.imgdb.cn/item/61acd0dd2ab3f51d912b1986.png" alt="">
+            </template>
+            <div class="logout">退出</div>
+          </el-popover>
+          <div class="item">{{ '18588458458' }}</div>
+        </div>
+      </div>
+    </div>
     <div class="container  mx-auto search-warp">
       <el-input class="search" v-model="searchKey" @change="serach" placeholder="" />
     </div>
@@ -57,6 +78,7 @@
 
     <TypeDialog v-model="typeDialogShow" :mode="typeMode" :formData="typeformData" :id="typeId" @finsh="handleGetDatas"></TypeDialog>
     <UrlDialog v-model="urlDialogShow" :mode="urlMode" :formData="urlformData" :parentId="activeTypeId" :id="urlId" @finsh="finsh2"></UrlDialog>
+    <LoginDialog v-model="loginDialogShow" @finsh="loginFinsh"></LoginDialog>
   </div>
 </template>
 <script setup>
@@ -64,6 +86,7 @@ import { create, update, getData, getDetails, del, getDatas } from '@/api/nav.js
 import { create as createUrl, update as updateUrl, del as delUrl, updateUrl as updateUrl2, getData as getUrlData } from '@/api/urls.js'
 import TypeDialog from './TypeDialog.vue'
 import UrlDialog from './UrlDialog.vue'
+import LoginDialog from './LoginDialog.vue'
 
 const navTypes = ref([])
 const showMenu = ref(false)
@@ -79,6 +102,8 @@ const menuStyle = computed(()=>{
 const searchKey = ref('')
 const typeDialogShow = ref(false)
 const urlDialogShow = ref(false)
+const loginDialogShow = ref(false)
+
 const typeMode = ref('create')
 const urlMode = ref('create')
 const typeformData = ref({name:''})
@@ -258,6 +283,10 @@ function finsh2() {
   urlDialogShow.value = false;
   changeMenuStatus2(false)
   handleGetDatas()
+}
+
+function loginFinsh() {
+  loginDialogShow.value = false
 }
 
 function serach() {
@@ -456,6 +485,37 @@ onMounted(()=>{
     span {
       display: inline-block;
       margin-right: 10px;
+    }
+  }
+}
+.head {
+  display: flex;
+  justify-content: space-between;
+  .left {
+    width: 50%;
+  }
+  .right {
+    width: 50%;
+    padding: 8px 0;
+    display: flex;
+    justify-content: right;
+    .items{
+      display: flex;
+      .face {
+        width: 30px;
+        height: 30px;
+        margin-right: 10px;
+        cursor: pointer;
+      }
+      .item {
+        display: flex;
+        align-items: center;
+        margin-right: 10px;
+        &.login {
+          // color: #409EFF;
+          cursor: pointer;
+        }
+      }
     }
   }
 }

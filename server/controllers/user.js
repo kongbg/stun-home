@@ -1,20 +1,27 @@
 import SQLiteDB from '../sqlite/index.js'
 import Mode from '../mode/index.js'
 import path from 'path'
+import crypto from 'crypto'
+import { generateToken } from '../utils/token.js'
+import { expiresIn, notBefore } from '../config/configs.js'
 
 const __dirname = path.resolve();
 let dbPath = path.join(__dirname + "/config/data.db")
-const tableName = 'navtypes'
+
+const tableName = 'users'
 
 // 创建数据库连接
 const db = new SQLiteDB(dbPath)
 const mode = new Mode(tableName, db)
-const urlMode = new Mode('urls', db)
+const tokenMode = new Mode('tokens', db)
 
 // 创建表字段
 const columns = [
   { name: 'id', type: 'INTEGER PRIMARY KEY AUTOINCREMENT' },
-  { name: 'name', type: 'TEXT' }, // 名称
+  { name: 'userName', type: 'TEXT' }, // 名称
+  { name: 'nick', type: 'TEXT' }, // 昵称
+  { name: 'passWord', type: 'TEXT' }, // 密码
+  { name: 'face', type: 'TEXT' }, // 图标
   { name: 'status', type: 'TEXT' , default: '1' }, // 1 启用 0 禁用
   { name: 'delstatus', type: 'TEXT', default: '0' }, // 1 已删除 0 未删除
   { name: 'createTime', type: 'TEXT' }, // 创建时间
@@ -22,8 +29,32 @@ const columns = [
 ]
 // 创建表
 db.createTable(tableName, columns)
+// 创建默认账号admin
+addAdmin()
 
-export default class navTypeController {
+async function addAdmin() {
+  let [err, res] = await mode.getData({userName: 'admin'})
+  if (!err) {
+    if (res.data.length == 0) {
+      const defaultPassWord = 'admin.'
+      const md5 = crypto.createHash('md5')
+      const md52 = crypto.createHash('md5')
+      let passWord = md5.update(defaultPassWord).digest('hex');
+      let encryptedPassword = md52.update(passWord).digest('hex');
+
+      mode.create(
+        {
+          userName: 'admin',
+          nick: 'admin',
+          passWord: encryptedPassword,
+          face: 'https://p0.meituan.net/csc/ce2606b956f1698cfd036b990b348a8815910.png'
+        }
+      )
+    }
+  }
+}
+
+export default class urlController {
   /**
    * 新增
    * @param {Context} ctx
@@ -115,21 +146,15 @@ export default class navTypeController {
    */
   static async getDatas(ctx) {
     const query = ctx.request.query
-    let [err, res] = await mode.getData(query)
-    let { data=[], total=0, totalPages=0 } = res || {};
+    let { data: list, total, totalPages } = await mode.getData(query)
 
-    let count = 0;
-    while(count < data.length) {
-      let item = data[count];
+    list.forEach(async item => {
+      // let res = await urlController.getData({ parentId: item.id })
+      // item.childre = res.data.list
+      // console.log('resres:', res)
 
-      let [err2, res2] = await urlMode.getData({ parentId: item.id })
-      if (err2) {
-        item.children = [];
-      } else {
-        item.children = res2.data || [];
-      }
-      count++;
-    }
+      item.children = []
+    });
 
     let result = {
       code: !err ? 200 : 400,
@@ -139,6 +164,62 @@ export default class navTypeController {
         totalPages
       } : null,
       msg: !err ? 'ok' : (err.msg || err.code)
+    }
+    ctx.body = result
+  }
+  
+  /**
+   * 额外接口
+   * 登录
+   */
+  static async login(ctx) {
+    let params = ctx.request.body;
+    let result = {}
+    const hash = crypto.createHash('md5')
+    hash.update(params.passWord);
+    const encryptedPassword = hash.digest('hex');
+
+    let [err, res] = await mode.getData(
+      {
+        userName: params.userName,
+        passWord: encryptedPassword,
+        page: 1,
+        pageSize: 1
+      }
+    )
+
+    if (!err && res.data.length) {
+      // 生成token
+      let userInfo = {
+        id: res.data[0].id,
+        userName: res.data[0].userName,
+        nick: res.data[0].nick
+      }
+
+      let token = generateToken(userInfo)
+
+      // 保存token
+      tokenMode.create({
+        token: token,
+        userId: res.data[0].id
+      })
+
+      result = {
+        code: 200,
+        data: {
+          token,
+          notBefore,
+          expiresIn
+        },
+        msg: 'ok'
+      }
+
+    } else {
+      result = {
+        code: 400,
+        data: null,
+        msg: '用户名或密码不正确'
+      }
     }
     ctx.body = result
   }

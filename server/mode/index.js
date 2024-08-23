@@ -14,7 +14,8 @@ export default class Mode {
     let createTime = formatDate('YYYY-MM-DD HH:mm:ss')
     const data = { ...params, createTime}
     let [err, res] = await this.db.insertData(this.tableName, data)
-    return [err, { id: res.lastID }]
+    
+    return [err, { id: res?.lastID }]
   }
 
   /**

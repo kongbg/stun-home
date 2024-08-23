@@ -1,9 +1,11 @@
 import Router from 'koa-router'
 import navtype from './navtype.js'
-import urls from './urls.js'
+import url from './url.js'
+import user from './user.js'
 
 const router = new Router()
 
 router.use(navtype)
-        .use(urls)
+        .use(url)
+        .use(user)
 export default router;

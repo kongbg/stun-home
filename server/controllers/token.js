@@ -4,10 +4,9 @@ import path from 'path'
 
 const __dirname = path.resolve();
 let dbPath = path.join(__dirname + "/config/data.db")
-console.log('dbPath:', dbPath)
 let apiKey = process.env.APIKEY || ''
 
-const tableName = 'urls'
+const tableName = 'tokens'
 
 // 创建数据库连接
 const db = new SQLiteDB(dbPath)
@@ -16,13 +15,10 @@ const mode = new Mode(tableName, db)
 // 创建表字段
 const columns = [
   { name: 'id', type: 'INTEGER PRIMARY KEY AUTOINCREMENT' },
-  { name: 'parentId', type: 'TEXT' }, // 分类id
-  { name: 'name', type: 'TEXT' }, // 名称
-  { name: 'url', type: 'TEXT' }, // url
-  { name: 'icon', type: 'TEXT' }, // 图标
-  { name: 'code', type: 'TEXT' }, // 网站code
-  { name: 'status', type: 'TEXT' }, // 1 启用 0 禁用
-  { name: 'delstatus', type: 'TEXT' }, // 1 已删除 0 未删除
+  { name: 'token', type: 'TEXT' }, // 名称
+  { name: 'userId', type: 'TEXT' }, // 用户id
+  { name: 'status', type: 'TEXT' , default: '1' }, // 1 启用 0 禁用
+  { name: 'delstatus', type: 'TEXT', default: '0' }, // 1 已删除 0 未删除
   { name: 'createTime', type: 'TEXT' }, // 创建时间
   { name: 'updateTime', type: 'TEXT' }, // 更新时间
 ]
