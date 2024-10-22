@@ -47,7 +47,7 @@ async function addAdmin() {
           userName: 'admin',
           nick: 'admin',
           passWord: encryptedPassword,
-          face: 'https://p0.meituan.net/csc/ce2606b956f1698cfd036b990b348a8815910.png'
+          face: ''
         }
       )
     }
@@ -220,6 +220,69 @@ export default class urlController {
         data: null,
         msg: '用户名或密码不正确'
       }
+    }
+    ctx.body = result
+  }
+
+  /**
+   * 获取用户信息
+   * @param {*} param
+   */
+  static async getUserInfo(ctx) {
+    let token = ctx.request.header.authorization.replace('Bearer ', '')
+    const query = {
+      token,
+      page: 1,
+      pageSize: 1
+    }
+
+    let [err, res] = await tokenMode.getData(query)
+    let { data=[], total=0, totalPages=0 } = res || {};
+
+    let userId = data[0].userId
+    const query2 = {
+      id: userId,
+      page: 1,
+      pageSize: 1
+    }
+    let [err2, res2] = await mode.getData(query2)
+
+    let userInfo = res2.data.length ? res2.data[0] : null
+    userInfo && delete userInfo.passWord
+
+    let result = {
+      code: !err2 ? 200 : 400,
+      data: userInfo,
+      msg: !err2 ? 'ok' : (err2.msg || err2.code)
+    }
+    ctx.body = result
+  }
+
+  /**
+   * 退出登录
+   * @param {*} param
+   */
+  static async logout(ctx) {
+    let token = ctx.request.header.authorization.replace('Bearer ', '')
+    const query = {
+      token,
+      page: 1,
+      pageSize: 1
+    }
+
+    let [err, res] = await tokenMode.getData(query)
+    let { data=[], total=0, totalPages=0 } = res || {};
+
+    let id = data[0].id
+    const query2 = {
+      id
+    }
+    let [err2, res2] = await tokenMode.delete(query2)
+
+    let result = {
+      code: !err2 ? 200 : 400,
+      data: null,
+      msg: !err2 ? 'ok' : (err2.msg || err2.code)
     }
     ctx.body = result
   }

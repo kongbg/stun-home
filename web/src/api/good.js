@@ -1,6 +1,6 @@
 import request from "@/utils/request";
 
-const urlKey = '/users'
+const urlKey = '/good'
 
 // 新增
 export const create = (data) => {
@@ -48,38 +48,4 @@ export const del = (data) => {
   })
 }
 
-// 查询列表(带children)
-export const getDatas = (params) => {
-  return request({
-    url: `${urlKey}/getDatas`,
-    method: "get",
-    params
-  })
-}
 
-// 登录
-export const login = (data) => {
-  return request({
-    url: `${urlKey}/login`,
-    method: "post",
-    data
-  })
-}
-
-// 获取用户信息详情
-export const getUserInfo = (params) => {
-  return request({
-    url: `${urlKey}/getUserInfo`,
-    method: "get",
-    params
-  })
-}
-
-// 退出登录
-export const logout = (data) => {
-  return request({
-    url: `${urlKey}/logout`,
-    method: "post",
-    data
-  })
-}

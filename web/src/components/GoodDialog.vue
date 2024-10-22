@@ -1,5 +1,5 @@
 <template>
-    <el-dialog v-model="props.modelValue" title="登录" width="500" :before-close="handleClose">
+    <el-dialog v-model="props.modelValue" title="商品" width="500" :before-close="handleClose">
 
         <el-form
             class="login-wrap"
@@ -9,11 +9,11 @@
             :rules="rules"
             label-width="auto"
         >
-            <el-form-item label="用户名" prop="userName">
-                <el-input v-model="formData.userName" />
+            <el-form-item label="code" prop="code">
+                <el-input v-model="formData.code" />
             </el-form-item>
-            <el-form-item label="用户密码" prop="passWord">
-                <el-input v-model="formData.passWord" />
+            <el-form-item label="url" prop="url">
+                <el-input v-model="formData.url" />
             </el-form-item>
         </el-form>
 
@@ -25,11 +25,10 @@
     </el-dialog>
 </template>
 <script setup>
-import { login } from '@/api/user.js'
-import { ElMessage } from "element-plus";
-import CryptoJS from 'crypto-js';
-import { setToken, removeToken } from '@/utils/auth.js'
+import { create } from '@/api/good.js'
+import { getCurrentInstance } from 'vue'
 
+const { proxy } = getCurrentInstance()
 const emit = defineEmits()
 const props = defineProps({
     modelValue: {
@@ -60,20 +59,19 @@ const handleSubmit = async () => {
     formRef.value.validate(async valid=>{
         if (valid) {
             let params = {
-                userName: formData.value.userName,
-                passWord: CryptoJS.MD5(formData.value.passWord).toString()
+                code: formData.value.code,
+                url: formData.value.url,
             }
-            let { code, data, msg } = await login(params)
+            let { code, data, msg } = await create(params)
             if (code == 200) {
-                ElMessage({
+                proxy.$Notif({
                     message: '登录成功',
                     type: 'success',
                 })
-                setToken(data.token)
+                
                 emit('update:modelValue', false)
                 emit('finsh')
             } else {
-                removeToken()
             }
         }
     })

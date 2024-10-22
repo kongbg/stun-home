@@ -20,7 +20,7 @@ class SQLiteDB {
   /**
    * 插入数据
    * @param {String} tableName 表名
-   * @param {Object} data 插入数据
+   * @param {Object} data 查询条件
    */
   insertData(tableName, data) {
     return new Promise(resolve=>{

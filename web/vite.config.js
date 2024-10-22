@@ -35,6 +35,7 @@ export default defineConfig({
     hmr: true,
     host: true,
     open: true,
+    port: 9000,
     proxy: {
       // https://cn.vitejs.dev/config/#server-proxy
       '/api': {

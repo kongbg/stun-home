@@ -1,4 +1,29 @@
 import { formatDate } from '../utils/index.js'
+
+// 生成条件
+function createConditions(params) {
+  let { id, w=[] } = params
+  delete params.id
+  delete params.w
+
+  let conditions = ''
+  if (w.length) {
+    w.forEach((a, i) => {
+      let str = ''
+      Object.keys(a).forEach((c, k) => {
+        str+= `${c} = '${a[c]}' ${k < Object.keys(a).length -1 ? 'AND ' : ''}`
+      })
+      conditions+=`${str}${i < Object.keys(w).length -1 ? 'OR ' : ''}`
+    })
+  } else {
+    if (!id) {
+      return [{ erron: 1, code: '请传入条件'}, {}]
+    }
+    conditions = `id = ${id}`
+  }
+
+  return conditions;
+}
 export default class Mode {
   constructor(tableName, db) {
     this.tableName = tableName;
@@ -14,23 +39,26 @@ export default class Mode {
     let createTime = formatDate('YYYY-MM-DD HH:mm:ss')
     const data = { ...params, createTime}
     let [err, res] = await this.db.insertData(this.tableName, data)
-    
+
     return [err, { id: res?.lastID }]
   }
 
   /**
    * 更新
    * @param {*} params.id id
+   * @param {*} params.w 条件
    */
-  async update(params, condition) {
+  async update(params) {
     let { id } = params
     let updateTime = formatDate('YYYY-MM-DD HH:mm:ss')
+    // 构建条件
+    let conditions = createConditions(params)
+    // 需要更新的字段
     let querys = { ...params, updateTime}
-    delete querys.id
+
     // 更新数据
-    let conditions = condition ? condition : `id = ${id}`
     let [err, res] = await this.db.updateData(this.tableName, querys, conditions)
-    return [err, { id }]
+    return [err, id ? { id } : {}]
   }
 
   /**
@@ -38,9 +66,9 @@ export default class Mode {
    * @param {*} param.page 当前页码 默认1
    * @param {*} param.pageSize 每页条数 默认10
    */
-  async getData(param) {
+  async getData(param={}) {
     const { page = 1, pageSize = 10 } = param
-    const querys = { ...param }
+    const querys = { status: 1, ...param }
     delete querys.page
     delete querys.pageSize
     let condition = ''
@@ -52,12 +80,14 @@ export default class Mode {
     if (lastIndex !== -1) {
       condition = condition.substring(0, lastIndex).trim()
     }
+
     let [err, res] = await this.db.getPagedData(
       this.tableName,
       page,
       pageSize,
       condition
     )
+
     if (err) {
       return [err, res]
     } else {
@@ -69,9 +99,17 @@ export default class Mode {
    * 删除
    * @param {*} params.id  id
    */
-  async delete(params, condition) {
+  async delete(params) {
+    // 构建条件
+    let conditions = createConditions(params)
+
     // 删除数据
-    const conditions = condition ? condition : `id = ${params.id}`
-    return await this.db.deleteData(this.tableName, conditions)
+    let [err, res] = await this.db.deleteData(this.tableName, conditions)
+
+    if (err) {
+      return [err, null]
+    } else {
+      return [null, null]
+    }
   }
 }

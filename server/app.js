@@ -26,7 +26,7 @@ app.use(async (ctx, next) => {
         if (401 === err.status) {
             ctx.status = 401;
             ctx.body = {
-                data: '没有找到token信息，请检查接口请求头信息'
+                msg: '没有找到token信息，请检查接口请求头信息'
             };
             console.log("未找到token: "+ err);
         } else {
@@ -47,7 +47,7 @@ app.use(koaBody({
 }));
 
 // 免验证token的白名单
-let whiteList = [/^\/api\/users\/login/, /^\/api\/urls\/updateUrl/]
+let whiteList = [/^\/api\/users\/login/, /^\/api\/urls\/updateUrl/,/^\/api\/urls\/getData/, /^\/api\/navtype\/getDatas/]
 app.use(jwt({ secret }).unless({path: whiteList}));
 
 app.use(appRouter.routes()).use(appRouter.allowedMethods())
