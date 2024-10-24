@@ -24,7 +24,7 @@ export const update = (data) => {
 // 查询列表
 export const getData = (params) => {
   return request({
-    url: `${urlKey}/getData`,
+    url: `${urlKey}/test`,
     method: "get",
     params
   })

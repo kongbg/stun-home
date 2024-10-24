@@ -53,3 +53,26 @@ export function formatDate(format, date = new Date()) {
       throw new Error('Unsupported format');
     }
 }
+/**
+ * 随机生成12位以字母开头的字符串（不保证唯一）
+ * @returns
+ */
+export function generateRandomString() {
+  const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = '';
+  const length = 12;
+
+  // 生成以字母开头的第一个字符
+  const firstChar = characters.charAt(Math.floor(Math.random() * 52));
+  result += firstChar;
+
+  // 生成剩余字符
+  while (result.length < length) {
+    const randomChar = characters.charAt(Math.floor(Math.random() * characters.length));
+    if (!result.includes(randomChar)) {
+      result += randomChar;
+    }
+  }
+
+  return result;
+}

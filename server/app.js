@@ -47,7 +47,7 @@ app.use(koaBody({
 }));
 
 // 免验证token的白名单
-let whiteList = [/^\/api\/users\/login/, /^\/api\/urls\/updateUrl/,/^\/api\/urls\/getData/, /^\/api\/navtype\/getDatas/]
+let whiteList = [/^\/api\/users\/login/, /^\/api\/urls\/updateUrl/,/^\/api\/urls\/getData/, /^\/api\/navtype\/getDatas/, /^\/api\/captchaImage/]
 app.use(jwt({ secret }).unless({path: whiteList}));
 
 app.use(appRouter.routes()).use(appRouter.allowedMethods())

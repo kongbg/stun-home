@@ -5,7 +5,7 @@ import path from 'path'
 const __dirname = path.resolve();
 let dbPath = path.join(__dirname + "/config/data.db")
 
-const tableName = 'goods'
+const tableName = 'apis'
 
 // 创建数据库连接
 const db = new SQLiteDB(dbPath)
@@ -14,15 +14,22 @@ const mode = new Mode(tableName, db)
 // 创建表字段
 const columns = [
   { name: 'id', type: 'INTEGER PRIMARY KEY AUTOINCREMENT' },
-  { name: 'name', type: 'TEXT' }, // 商品名称
-  { name: 'price', type: 'TEXT', default: '99' }, // 价格 默认： 99
-  { name: 'picture', type: 'TEXT' }, // 商品图片
-  { name: 'code', type: 'TEXT' }, // code
-  { name: 'url', type: 'TEXT' }, // 商品链接
+  { name: 'pid', type: 'TEXT', default: '0' }, // 父级id
+  { name: 'tableName', type: 'TEXT' }, // 表名
+  { name: 'desc', type: 'TEXT' }, // 接口类型描述
+  { name: 'apiName', type: 'TEXT' }, // 接口名称
+  { name: 'path', type: 'TEXT' }, // 接口路径
+  { name: 'method', type: 'TEXT' }, // 接口请求方式
+  { name: 'query', type: 'TEXT' }, // 接口query参数
+  { name: 'params', type: 'TEXT' }, // 接口params参数
+  { name: 'response', type: 'TEXT' }, // 接口响应
+  { name: 'handler', type: 'TEXT' }, // 自定义接口逻辑
+  { name: 'canEdit', type: 'TEXT', default: '1' }, // 是否可编辑 1 是 0 否
   { name: 'status', type: 'TEXT' , default: '1' }, // 1 启用 0 禁用
   { name: 'createTime', type: 'TEXT' }, // 创建时间
   { name: 'updateTime', type: 'TEXT' }, // 更新时间
 ]
+
 // 创建表
 db.createTable(tableName, columns)
 
@@ -77,7 +84,6 @@ export default class urlController {
   static async getData(ctx) {
     const query = ctx.request.query
     let [err, res] = await mode.getData(query)
-
     ctx.body = handleRes(err, res, 2)
   }
 

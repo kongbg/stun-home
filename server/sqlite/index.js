@@ -12,9 +12,17 @@ class SQLiteDB {
    * @param {Array} columns 表字段
    */
   createTable(tableName, columns) {
-    const columnDefinitions = columns.map(column => `${column.name} ${column.type} ${column.default ? 'DEFAULT '+column.default : ''}`).join(', ');
-    const query = `CREATE TABLE IF NOT EXISTS ${tableName} (${columnDefinitions})`;
-    this.db.run(query);
+    return new Promise(resolve=>{
+      const columnDefinitions = columns.map(column => `${column.name} ${column.type} ${column.default ? 'DEFAULT '+column.default : ''}`).join(', ');
+      const query = `CREATE TABLE IF NOT EXISTS ${tableName} (${columnDefinitions})`;
+      this.db.run(query, function(err){
+        if (err) {
+          resolve([err, null])
+        } else {
+          resolve([null, this])
+        }
+      });
+    })
   }
 
   /**
